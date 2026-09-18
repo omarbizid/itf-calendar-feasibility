@@ -29,3 +29,7 @@ test('large count drops preserve the previous snapshot',()=>{
   const previous={dateFrom:'2026-09-01',tournaments:Array.from({length:10},()=>({circuit:'MT'}))};
   assert.throws(()=>validateReplacement(previous,{dateFrom:'2026-09-01',tournaments:[{circuit:'MT'}]}),/suspicious drop/);
 });
+test('unpublished future month may be empty only when explicitly allowed',async()=>{
+  const rows=await collectCircuit('MT',importWindow(),async()=>response({totalItems:0,items:[]}),async()=>{},true);
+  assert.deepEqual(rows,[]);
+});

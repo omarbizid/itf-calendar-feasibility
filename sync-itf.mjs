@@ -9,7 +9,7 @@ export function importWindow(now = new Date()) {
     dateTo: new Date(Date.UTC(y, m + 6, 0)).toISOString().slice(0, 10) };
 }
 
-export async function collectCircuit(circuit, window, request = fetch, delay = pause) {
+export async function collectCircuit(circuit, window, request = fetch, delay = pause, allowEmpty = false) {
   const records = new Map();
   let expected;
   let skip = 0;
@@ -19,14 +19,20 @@ export async function collectCircuit(circuit, window, request = fetch, delay = p
       nationCodes: '', zoneCodes: '', ...window, indoorOutdoor: '', categories: '', isOrderAscending: 'true',
       orderField: 'startDate', surfaceCodes: '', singlesDrawFormat: '' }).toString();
     const response = await request(url, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(30000) });
-    const data = validateApiResponse(response.status, response.headers.get('content-type') || '', await response.text());
+    const contentType = response.headers.get('content-type') || '';
+    const body = await response.text();
+    if (allowEmpty && skip === 0 && response.status === 200 && contentType.includes('application/json')) {
+      const candidate = JSON.parse(body);
+      if (candidate.totalItems === 0 && Array.isArray(candidate.items) && candidate.items.length === 0) return [];
+    }
+    const data = validateApiResponse(response.status, contentType, body);
     if (expected !== undefined && expected !== data.totalItems) throw new Error(`${circuit}: total changed during pagination`);
     expected = data.totalItems;
     for (const item of data.items) {
       const id = item.tournamentKey || item.id;
       if (!id || !item.startDate || !item.endDate || !item.hostNation || !(item.tournamentName || item.name)) throw new Error(`${circuit}: incomplete event schema`);
       const key = `${circuit}:${id}`;
-      if (records.has(key)) throw new Error(`${circuit}: repeated event during pagination`);
+      if (records.has(key)) throw new Error(`${circuit}: repeated event during pagination: ${key}, offset ${skip}`);
       // Keep source fields; UI mapping and venue coordinates are a separate step.
       const record = { circuit };
       for (const field of ['id','tournamentKey','tournamentName','name','dates','startDate','endDate','location',
@@ -57,10 +63,21 @@ async function main() {
   const window = importWindow();
   const tournaments = [];
   for (const circuit of ['MT', 'WT']) {
-    const rows = await collectCircuit(circuit, window);
-    console.log(`${circuit}: ${rows.length} events, ${window.dateFrom} to ${window.dateTo}`);
-    tournaments.push(...rows);
-    await pause(1500);
+    const byId = new Map();
+    const first = new Date(`${window.dateFrom}T00:00:00Z`);
+    for (let offset = 0; offset < 6; offset++) {
+      const year = first.getUTCFullYear(), month = first.getUTCMonth() + offset;
+      const monthWindow = {
+        dateFrom: new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10),
+        dateTo: new Date(Date.UTC(year, month + 1, 0)).toISOString().slice(0, 10)
+      };
+      const rows = await collectCircuit(circuit, monthWindow, fetch, pause, offset > 0);
+      console.log(`${circuit}: ${rows.length} rows for ${monthWindow.dateFrom}`);
+      for (const row of rows) byId.set(`${circuit}:${row.tournamentKey || row.id}`, row);
+      await pause(1500);
+    }
+    console.log(`${circuit}: ${byId.size} unique events`);
+    tournaments.push(...byId.values());
   }
   const next = { schemaVersion: 1, checkedAt: new Date().toISOString(), ...window,
     source: 'https://www.itftennis.com', tournaments };
