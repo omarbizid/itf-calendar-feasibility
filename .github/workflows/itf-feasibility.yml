@@ -1,0 +1,34 @@
+name: ITF access feasibility (manual only)
+on:
+  workflow_dispatch:
+    inputs:
+      month:
+        description: 'Month to probe (YYYY-MM)'
+        required: true
+        default: '2026-09'
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        circuit: [MT, WT]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test
+      - run: npm run probe
+        env:
+          ITF_MONTH: ${{ inputs.month }}
+          ITF_CIRCUIT: ${{ matrix.circuit }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: itf-probe-${{ matrix.circuit }}
+          path: reports/itf-probe.json
+          retention-days: 3
