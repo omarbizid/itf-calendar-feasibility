@@ -3,6 +3,18 @@
 Budget: $0 operating costs. Planning/prototype stage; no website or daily automation has been deployed.
 Initial coverage: men's and women's professional ITF World Tennis Tour worldwide.
 
+## Hosted test result: passed, 18 September 2026
+
+Repository: https://github.com/omarbizid/itf-calendar-feasibility
+Run: https://github.com/omarbizid/itf-calendar-feasibility/actions/runs/35355077313
+Commit tested: 92cd2d62caeff6e83cf1ef50d63f41bae226d8b1
+
+Both standard Ubuntu runner jobs passed all seven tests and fetched HTTP 200 application/json from the ITF endpoint, without ITF login, cookies, API credentials or browser automation.
+The men's response reported totalItems=72 and the women's totalItems=65 for September 2026; each request retrieved only two sample records. This verifies one hosted request per tour, not full import, pagination, every month, or long-term reliability. No daily schedule is active.
+Returned item fields include tournamentName, location, category, prizeMoney, surfaceDesc, surfaceCode, tourStatusCode, tourStatusDesc, indoorOrOutDoor, hostNation, hostNationCode, venue, startDate, endDate, tournamentKey, tournamentLink and hospitality. Values still need inspection before implementing the API adapter.
+
+The earlier local protection-page response below is historical evidence: access differs between the local environment and this hosted test.
+
 ## Verified on 18 September 2026
 
 - Public men's September calendar: 72 event rows, including 6 cancellations.
@@ -28,7 +40,7 @@ Parameters include circuitCode, searchString, skip, take, nationCodes, zoneCodes
 Frontend code maps men's to MT and women's to WT and consumes items/totalItems.
 This is a discovered website endpoint, not a documented or guaranteed public developer API.
 
-A direct two-record request without cookies returned HTTP 200 with text/html and an Incapsula protection script, not JSON. Therefore direct unattended collection remains unproven. Browser DOM extraction works in the current desktop session. Do not copy session cookies, solve challenges unattended, or equate desktop access with hosted-runner access.
+A local direct two-record request without cookies returned HTTP 200 with text/html and an Incapsula protection script, not JSON. The subsequent hosted test above succeeded. Browser DOM extraction also works in the desktop session. Do not copy session cookies or solve challenges unattended.
 
 ## Prototype
 
@@ -40,7 +52,7 @@ A direct two-record request without cookies returned HTTP 200 with text/html and
 - .github/workflows/itf-feasibility.yml: manually triggered test for MT and WT on a standard Ubuntu runner. No schedule or write permissions.
 
 Run local validation with `npm test`. Run a permitted network probe with `npm run probe`.
-All seven local tests passed; both script files passed Node syntax checks. The network result above was obtained using PowerShell; the Node probe and GitHub workflow have not yet run against the remote endpoint.
+All seven local tests passed; both script files passed Node syntax checks. All seven tests also passed in each hosted job. The Node probe succeeded for both circuits on GitHub; the earlier PowerShell probe encountered the local protection response.
 
 ## Proposed daily update design (not implemented)
 
@@ -56,8 +68,8 @@ Proposed infrastructure: Cloudflare Pages free hosting/subdomain, open-source Gl
 
 ## Remaining decision gates
 
-- Run the manual probe in https://github.com/omarbizid/itf-calendar-feasibility to establish hosted access. Failure must remain a failure, not trigger protection bypasses.
-- If JSON becomes available, inspect and validate real item fields before writing an API-to-website adapter. Current normalization handles browser-extracted rows only.
-- If the endpoint remains inaccessible, evaluate an authorised browser/export route; do not promise reliable daily refreshes.
+- Hosted access is established for two sample requests. Next validate full-month pagination and repeated access before relying on a daily schedule.
+- Inspect and validate real item values before writing an API-to-website adapter. Current normalization handles browser-extracted rows only.
+- On future access failures preserve the last good snapshot; do not bypass protection or promise guaranteed refreshes.
 - ITF's website reuse terms remain relevant before public redistribution: https://www.itftennis.com/en/about-us/terms-conditions/ . Technical readability is not a reuse licence.
 - Full website implementation and deployment remain outside this feasibility test.
