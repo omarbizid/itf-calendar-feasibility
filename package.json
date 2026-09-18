@@ -1,0 +1,10 @@
+{
+  "name": "itf-calendar-feasibility",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "probe": "node probe-itf.mjs"
+  },
+  "engines": { "node": ">=22" }
+}
