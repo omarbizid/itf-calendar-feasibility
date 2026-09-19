@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#132c32">
+  <meta name="description" content="Find your next ITF tournament. Explore a worldwide tennis calendar on an interactive globe, with filters for tour, dates, country, category and surface.">
+  <title>Court Atlas — Find your next ITF tournament</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23132c32'/%3E%3Ccircle cx='32' cy='32' r='21' fill='%23d8f36a'/%3E%3Cpath d='M16 17Q39 32 16 47M48 17Q25 32 48 47' fill='none' stroke='%23132c32' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="d3.min.js" defer></script><script src="topojson.min.js" defer></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+<a class="skip" href="#results">Skip to tournaments</a>
+<header class="header"><a class="brand" href="./" aria-label="Court Atlas home"><span class="brand-icon" aria-hidden="true">◉</span> COURT<span>ATLAS</span></a><nav aria-label="Main navigation"><a class="active" href="#explore">Explore</a><a href="#about">About the data <span aria-hidden="true">↗</span></a></nav><span class="header-note">THE WORLD IS YOUR COURT</span></header>
+<main id="explore">
+  <section class="intro"><div><p class="eyebrow"><span class="little-ball"></span> THE ITF WORLD TENNIS TOUR, MAPPED</p><h1>Your next match.<br><span>Somewhere out there.</span></h1><p class="intro-copy">Find a tournament. Explore a new place. Plan your next step.</p></div><div class="intro-stat"><strong id="total">—</strong><span>tournaments in the calendar</span><span id="freshness" class="freshness">Loading the latest calendar…</span></div></section>
+  <div id="notice" class="notice" role="status" hidden></div>
+  <div class="workspace">
+    <button id="toggle-filters" class="filter-toggle" aria-controls="filters" aria-expanded="false">Filters & search <span aria-hidden="true">＋</span></button>
+    <aside id="filters" class="filters" aria-label="Tournament filters"><div class="filter-heading"><h2>Find your tournament</h2><button id="reset" class="text-button">Reset all ↺</button></div>
+    <label for="search">SEARCH</label><div class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="City, country or tournament" autocomplete="off"></div>
+    <fieldset><legend>TOUR</legend><div class="segmented"><label><input type="radio" name="tour" value="" checked><span>All</span></label><label><input type="radio" name="tour" value="MT"><span>Men</span></label><label><input type="radio" name="tour" value="WT"><span>Women</span></label></div></fieldset>
+    <div class="field-row"><div><label for="from">FROM</label><input type="date" id="from"></div><div><label for="to">TO</label><input type="date" id="to"></div></div>
+    <label for="country">COUNTRY</label><select id="country"><option value="">Anywhere in the world</option></select>
+    <label for="category">CATEGORY</label><select id="category"><option value="">All categories</option></select>
+    <fieldset><legend>SURFACE</legend><div class="surface-options"><label><input type="checkbox" name="surface" value="Hard"><span><i class="hard"></i>Hard</span></label><label><input type="checkbox" name="surface" value="Clay"><span><i class="clay"></i>Clay</span></label><label><input type="checkbox" name="surface" value="Grass"><span><i class="grass"></i>Grass</span></label><label><input type="checkbox" name="surface" value="Carpet"><span><i class="carpet"></i>Carpet</span></label></div></fieldset>
+    <label for="setting">COURT SETTING</label><select id="setting"><option value="">Indoor & outdoor</option><option>Outdoor</option><option>Indoor</option></select>
+    <label class="check-label"><input id="cancelled" type="checkbox"> Include cancelled events</label>
+    <div class="filter-note"><span aria-hidden="true">↗</span><p>Start your next chapter.<br><small>Explore M15 and W15 events at the entry level of the professional tour. Entry is subject to ITF rules and acceptance.</small></p></div>
+    </aside>
+    <div class="main-column">
+      <section class="map-panel" aria-label="Interactive tournament globe"><div class="map-heading"><div><span class="live-dot"></span> EXPLORE THE WORLD</div><span id="mapped">Locating tournaments…</span></div>
+      <div class="globe-wrap"><svg id="globe" viewBox="0 0 860 550" role="img" tabindex="0" aria-label="Tournament globe. Drag to rotate, use arrow keys to rotate, and plus or minus to zoom."></svg><div class="globe-empty" id="map-error" hidden></div></div>
+      <div class="map-bottom"><div><span class="legend-dot"></span> Tournament city <span class="map-hint">· Drag to explore</span><small>City locations are approximate, not venue addresses.</small></div><div class="map-controls"><button id="zoom-out" aria-label="Zoom out">−</button><button id="zoom-in" aria-label="Zoom in">+</button><button id="reset-globe" aria-label="Reset globe view">↺</button></div></div>
+      </section>
+      <section id="results" class="results" aria-labelledby="results-title"><div class="results-heading"><div><p class="eyebrow">YOUR NEXT OPPORTUNITIES</p><h2 id="results-title">Tournaments <span id="count">—</span></h2></div><label class="sort-label" for="sort">Sort by <select id="sort"><option value="date">Soonest first</option><option value="name">City A–Z</option></select></label></div><div id="active-location" hidden></div><p id="result-message" class="result-message" role="status" aria-live="polite">Loading tournaments…</p><div id="cards" class="cards"></div><button id="more" class="more" hidden>Show more tournaments ↓</button></section>
+    </div>
+  </div>
+</main>
+<footer id="about"><div><a class="brand" href="#">COURT<span>ATLAS</span></a><p>A little less searching. A little closer to your next match.</p></div><div><strong>Independent tournament explorer</strong><p>Calendar: <a href="https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/" target="_blank" rel="noopener">ITF World Tennis Tour ↗</a>. Daily refreshes; changes may be delayed.<br>Confirm dates, entry deadlines and acceptance on the official event page.<br>Maps: Natural Earth · City coordinates: <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>). No affiliation with the ITF.</p><span id="coverage"></span></div></footer>
+<dialog id="details"><button id="close-dialog" class="close" aria-label="Close tournament details">×</button><div id="detail-content"></div></dialog>
+<noscript><p class="notice">Enable JavaScript to use the globe and filters. You can also browse the <a href="https://www.itftennis.com/en/tournament-calendar/mens-world-tennis-tour-calendar/">official ITF calendar</a>.</p></noscript>
+</body></html>

@@ -1,2 +1,5 @@
 reports/
 node_modules/
+.geo/
+cities*.zip
+countryInfo.txt

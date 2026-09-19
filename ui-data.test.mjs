@@ -1,0 +1,8 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {filterEvents,locationKey,officialUrl,calendarText} from './ui-data.mjs';
+const event={tournamentName:'W15 Évora',tournamentKey:'W-TEST',location:'Évora',hostNation:'Portugal',hostNationCode:'POR',startDate:'2026-09-14T00:00:00',endDate:'2026-09-20T00:00:00',circuit:'WT',category:'W15',surfaceDesc:'Hard',indoorOrOutDoor:'Outdoor',tournamentLink:'/en/tournament/test/'};
+test('date filter includes events already in progress and combines tour/surface/search',()=>{assert.equal(filterEvents([event],{from:'2026-09-19',to:'2026-09-19',tour:'WT',surfaces:['Hard'],search:'evora'}).length,1);assert.equal(filterEvents([event],{from:'2026-09-21'}).length,0);assert.equal(filterEvents([event],{tour:'MT'}).length,0);});
+test('cancelled events are excluded by default and can be restored',()=>{const t={...event,tourStatusDesc:'Cancelled'};assert.equal(filterEvents([t],{}).length,0);assert.equal(filterEvents([t],{cancelled:true}).length,1);});
+test('coordinate matching normalizes accents and cancellation suffix',()=>assert.equal(locationKey(event),locationKey({...event,location:'Evora (Cancelled)'})));
+test('official event links cannot point to other hosts or unsafe schemes',()=>{assert.equal(officialUrl({...event,tournamentLink:'https://evil.example/'}),null);assert.equal(officialUrl({...event,tournamentLink:'javascript:alert(1)'}),null);assert.equal(officialUrl(event),'https://www.itftennis.com/en/tournament/test/');});
+test('calendar uses exclusive end date and escapes injected lines',()=>{const text=calendarText({...event,tournamentName:'Test\nEND:VEVENT'});assert.ok(text.includes('DTEND;VALUE=DATE:20260921'));assert.ok(text.includes('SUMMARY:Test\\nEND:VEVENT'));});

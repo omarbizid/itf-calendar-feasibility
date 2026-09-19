@@ -1,6 +1,6 @@
 # ITF globe: data feasibility and first-release plan
 
-Budget: $0 operating costs. Daily import is active; the globe website has not been deployed.
+Budget: $0 operating costs. Daily import is active. Court Atlas now implements the globe, filters, tournament details and calendar export; GitHub Pages serves the static website from the repository root.
 Initial coverage: men's and women's professional ITF World Tennis Tour worldwide.
 
 ## Daily import verified, 19 September 2026
