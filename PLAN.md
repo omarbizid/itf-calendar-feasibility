@@ -1,7 +1,15 @@
 # ITF globe: data feasibility and first-release plan
 
-Budget: $0 operating costs. Planning/prototype stage; no website or daily automation has been deployed.
+Budget: $0 operating costs. Daily import is active; the globe website has not been deployed.
 Initial coverage: men's and women's professional ITF World Tennis Tour worldwide.
+
+## Daily import verified, 19 September 2026
+
+Scheduled run https://github.com/omarbizid/itf-calendar-feasibility/actions/runs/35432967008 passed all 13 tests and saved data/itf-calendar.json: 412 unique events, comprising 210 MT and 202 WT. The query window is September 2026 through February 2027; unpublished future months can be empty. checkedAt is 2026-09-19T08:48:26.731Z.
+
+The daily workflow runs at 04:17 UTC, subject to GitHub scheduling delays. It requests months separately, paginates, deduplicates tournamentKey across overlapping months, checks required fields and count consistency, and atomically replaces the snapshot only after validation. It rejects a count drop over 30% per circuit when comparing the same window start. It preserves explicit cancellation fields. Detail fetching, coordinates and the website adapter are not implemented.
+
+An initial broad date-range import encountered repeated records during pagination. Monthly requests resolved that failure. The scheduled run verified the corrected importer end to end. Long-term reliability remains unproven.
 
 ## Hosted test result: passed, 18 September 2026
 
@@ -10,7 +18,7 @@ Run: https://github.com/omarbizid/itf-calendar-feasibility/actions/runs/35355077
 Commit tested: 92cd2d62caeff6e83cf1ef50d63f41bae226d8b1
 
 Both standard Ubuntu runner jobs passed all seven tests and fetched HTTP 200 application/json from the ITF endpoint, without ITF login, cookies, API credentials or browser automation.
-The men's response reported totalItems=72 and the women's totalItems=65 for September 2026; each request retrieved only two sample records. This verifies one hosted request per tour, not full import, pagination, every month, or long-term reliability. No daily schedule is active.
+The men's response reported totalItems=72 and the women's totalItems=65 for September 2026; each request retrieved only two sample records. This initial test was followed by the successful daily import described above.
 Returned item fields include tournamentName, location, category, prizeMoney, surfaceDesc, surfaceCode, tourStatusCode, tourStatusDesc, indoorOrOutDoor, hostNation, hostNationCode, venue, startDate, endDate, tournamentKey, tournamentLink and hospitality. Values still need inspection before implementing the API adapter.
 
 The earlier local protection-page response below is historical evidence: access differs between the local environment and this hosted test.
@@ -54,7 +62,7 @@ A local direct two-record request without cookies returned HTTP 200 with text/ht
 Run local validation with `npm test`. Run a permitted network probe with `npm run probe`.
 All seven local tests passed; both script files passed Node syntax checks. All seven tests also passed in each hosted job. The Node probe succeeded for both circuits on GitHub; the earlier PowerShell probe encountered the local protection response.
 
-## Proposed daily update design (not implemented)
+## Target design (daily calendar import implemented; enrichment and website pending)
 
 1. Refresh both tours over a rolling six-month window, once daily at 04:17 UTC.
 2. Respect pagination using totalItems; deduplicate month-overlap records by verified tournament ID.
@@ -68,7 +76,7 @@ Proposed infrastructure: Cloudflare Pages free hosting/subdomain, open-source Gl
 
 ## Remaining decision gates
 
-- Hosted access is established for two sample requests. Next validate full-month pagination and repeated access before relying on a daily schedule.
+- Hosted access and a complete scheduled import are established. Observe subsequent runs to assess sustained reliability.
 - Inspect and validate real item values before writing an API-to-website adapter. Current normalization handles browser-extracted rows only.
 - On future access failures preserve the last good snapshot; do not bypass protection or promise guaranteed refreshes.
 - ITF's website reuse terms remain relevant before public redistribution: https://www.itftennis.com/en/about-us/terms-conditions/ . Technical readability is not a reuse licence.
