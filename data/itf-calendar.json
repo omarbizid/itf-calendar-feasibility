@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-29T10:42:26.945Z",
+  "checkedAt": "2026-09-30T10:29:44.381Z",
   "dateFrom": "2026-09-01",
   "dateTo": "2027-02-28",
   "source": "https://www.itftennis.com",
@@ -9221,6 +9221,28 @@
       "tourStatusCode": null,
       "tourStatusDesc": null,
       "tournamentLink": "/en/tournament/w15-antalya/tur/2026/w-itf-tur-2026-034/",
+      "hospitality": null
+    },
+    {
+      "circuit": "WT",
+      "id": 0,
+      "tournamentKey": "W-ITF-TUN-2026-047",
+      "tournamentName": "W15 Monastir",
+      "name": "W15 Monastir",
+      "dates": "21 Dec to 27 Dec 2026",
+      "startDate": "2026-12-21T00:00:00",
+      "endDate": "2026-12-27T00:00:00",
+      "location": "Monastir",
+      "hostNation": "Tunisia",
+      "hostNationCode": "TUN",
+      "category": "W15",
+      "prizeMoney": "$15,000",
+      "surfaceDesc": "Hard",
+      "surfaceCode": "H",
+      "indoorOrOutDoor": "Outdoor",
+      "tourStatusCode": null,
+      "tourStatusDesc": null,
+      "tournamentLink": "/en/tournament/w15-monastir/tun/2026/w-itf-tun-2026-047/",
       "hospitality": null
     },
     {
