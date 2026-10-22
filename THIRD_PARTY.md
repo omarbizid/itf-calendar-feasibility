@@ -4,7 +4,7 @@ Court Atlas is an independent project, not affiliated with the ITF.
 
 - Tournament information: ITF World Tennis Tour calendar, https://www.itftennis.com/ . See the source's terms for reuse conditions. Entry and acceptance must be checked with ITF.
 - City coordinates: GeoNames cities500, https://www.geonames.org/ , Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/). Coordinates are matched to tournament city names; uncertain matches are omitted. These are not verified venue addresses.
-- World geometry: world-atlas 2.0.2, ISC license, derived from public-domain Natural Earth data. https://github.com/topojson/world-atlas
+- World geometry: world-atlas 2.0.2 (countries-110m as world.json, countries-50m as world-50m.json for close zoom), ISC license, derived from public-domain Natural Earth data. https://github.com/topojson/world-atlas
 - d3 7.9.0, ISC license, copyright Mike Bostock. https://github.com/d3/d3
 - topojson-client 3.1.0, ISC license, copyright Mike Bostock. https://github.com/topojson/topojson-client
 - DM Sans and Manrope fonts are loaded from Google Fonts; SIL Open Font License.

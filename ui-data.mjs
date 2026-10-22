@@ -24,3 +24,12 @@ export function calendarText(t){
  const end=new Date(t.endDate.slice(0,10)+'T00:00:00Z');end.setUTCDate(end.getUTCDate()+1);
  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Court Atlas//ITF Calendar//EN','BEGIN:VEVENT',`UID:${esc(t.tournamentKey)}@court-atlas`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'')}`,`DTSTART;VALUE=DATE:${day(t.startDate)}`,`DTEND;VALUE=DATE:${day(end.toISOString())}`,`SUMMARY:${esc(t.tournamentName)}`,`LOCATION:${esc(t.location+', '+t.hostNation)}`,`DESCRIPTION:${esc('Confirm dates and entry details with ITF. '+(officialUrl(t)||''))}`,isCancelled(t)?'STATUS:CANCELLED':'STATUS:CONFIRMED','END:VEVENT','END:VCALENDAR'].join('\r\n');
 }
+export function distanceKm(a,b){const r=Math.PI/180,dLat=(b.lat-a.lat)*r,dLng=(b.lng-a.lng)*r,h=Math.sin(dLat/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLng/2)**2;return 2*6371*Math.asin(Math.min(1,Math.sqrt(h)));}
+// Events a player could chain after this one: same tour, later start within `days`, within `km` of this city.
+export function nextNearby(t,events,locations,{days=28,km=800,max=6}={}){
+ const from=locations[locationKey(t)];if(!from)return [];
+ const start=t.startDate.slice(0,10),end=new Date(start+'T00:00:00Z');end.setUTCDate(end.getUTCDate()+days);const last=end.toISOString().slice(0,10);
+ return events.filter(o=>o!==t&&o.circuit===t.circuit&&!isCancelled(o)&&o.startDate.slice(0,10)>start&&o.startDate.slice(0,10)<=last&&locations[locationKey(o)])
+  .map(o=>({event:o,km:Math.round(distanceKm(from,locations[locationKey(o)]))})).filter(x=>x.km<=km)
+  .sort((a,b)=>a.event.startDate.localeCompare(b.event.startDate)||a.km-b.km).slice(0,max);
+}
