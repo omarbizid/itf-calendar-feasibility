@@ -36,7 +36,7 @@ export async function collectCircuit(circuit, window, request = fetch, delay = p
       // Keep source fields; UI mapping and venue coordinates are a separate step.
       const record = { circuit };
       for (const field of ['id','tournamentKey','tournamentName','name','dates','startDate','endDate','location',
-        'hostNation','hostNationCode','category','prizeMoney','surfaceDesc','surfaceCode',
+        'hostNation','hostNationCode','venue','category','prizeMoney','surfaceDesc','surfaceCode',
         'indoorOrOutDoor','tourStatusCode','tourStatusDesc','tournamentLink','hospitality']) {
         record[field] = item[field] ?? null;
       }

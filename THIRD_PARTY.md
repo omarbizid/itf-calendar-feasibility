@@ -7,6 +7,7 @@ Court Atlas is an independent project, not affiliated with the ITF.
 - World geometry: world-atlas 2.0.2 (countries-110m as world.json, countries-50m as world-50m.json for close zoom), ISC license, derived from public-domain Natural Earth data. https://github.com/topojson/world-atlas
 - d3 7.9.0, ISC license, copyright Mike Bostock. https://github.com/d3/d3
 - topojson-client 3.1.0, ISC license, copyright Mike Bostock. https://github.com/topojson/topojson-client
+- Tournament maps in event details are embedded from Google Maps and link to it; Google's terms apply. Venue names come from the ITF calendar when supplied.
 - DM Sans and Manrope fonts are loaded from Google Fonts; SIL Open Font License.
 
 ## ISC license (D3, TopoJSON and world-atlas)

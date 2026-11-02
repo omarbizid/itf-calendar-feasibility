@@ -14,6 +14,11 @@ export const tierOf=category=>Number(String(category||'').match(/\d+/)?.[0])||0;
 export const prizeValue=t=>Number(String(t.prizeMoney||'').replace(/[^0-9.]/g,''))||0;
 export function weekStart(date){const d=new Date(date.slice(0,10)+'T00:00:00Z');d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);return d.toISOString().slice(0,10);}
 export function categoryCounts(events){const counts=new Map();for(const t of events)if(t.category)counts.set(t.category,(counts.get(t.category)||0)+1);return counts;}
+export const venueOf=t=>typeof t.venue==='string'?t.venue.trim():'';
+// Google Maps needs no API key for a search link or the classic embed; the venue is used once the importer has it.
+export function mapsQuery(t){const city=String(t.location||'').replace(/\s*\(Cancelled\)/i,'').trim();return [venueOf(t),city,t.hostNation].filter(Boolean).join(', ');}
+export const mapsUrl=t=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(mapsQuery(t));
+export const mapsEmbedUrl=t=>`https://maps.google.com/maps?q=${encodeURIComponent(mapsQuery(t))}&z=${venueOf(t)?15:12}&output=embed`;
 export function officialUrl(t){
  if(!t.tournamentLink)return null;
  try{const u=new URL(t.tournamentLink,'https://www.itftennis.com');return u.protocol==='https:'&&u.hostname==='www.itftennis.com'?u.href:null;}catch{return null;}

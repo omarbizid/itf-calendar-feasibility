@@ -11,10 +11,10 @@ test('pagination advances by actual returned length and retains cancellation',as
   const offsets=[];
   const rows=await collectCircuit('MT',importWindow(),async url=>{
     const skip=Number(url.searchParams.get('skip')); offsets.push(skip);
-    return response({totalItems:3,items:skip===0?[item('a'),item('b')]:[{...item('c'),tourStatusDesc:'Cancelled'}]});
+    return response({totalItems:3,items:skip===0?[{...item('a'),venue:'Tennis Club de Nevers'},item('b')]:[{...item('c'),tourStatusDesc:'Cancelled'}]});
   },async()=>{});
   assert.deepEqual(offsets,[0,2]);
-  assert.equal(rows.length,3); assert.equal(rows[2].tourStatusDesc,'Cancelled');
+  assert.equal(rows.length,3); assert.equal(rows[2].tourStatusDesc,'Cancelled'); assert.equal(rows[0].venue,'Tennis Club de Nevers'); assert.equal(rows[1].venue,null);
 });
 test('changing pagination totals and repeated pages are rejected',async()=>{
   let n=0;

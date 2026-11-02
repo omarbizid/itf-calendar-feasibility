@@ -21,3 +21,4 @@
 dialog{max-height:calc(100vh - 30px);overflow:auto}
 @media(prefers-reduced-motion:reduce){.marker.selected .pin-pulse,.marker.spotlight .pin-pulse{animation:none;transform:scale(1.6);opacity:.6}.marker .pin-core{animation:none!important}}
 @media(max-width:700px){.zoom-level{display:none}.swing li button{grid-template-columns:46px 1fr auto;gap:8px}}
+.gmap{margin:0 0 10px}.gmap iframe{display:block;width:100%;height:210px;border:1px solid var(--line);border-radius:9px;background:#e7ebdd}.gmap figcaption{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5}.detail-map:has(>:only-child){grid-template-columns:1fr}
